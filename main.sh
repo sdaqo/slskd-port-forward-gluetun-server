@@ -29,7 +29,7 @@ token=$(curl -X POST --fail --silent --show-error \
   "{\"username\": \"$slskd_username\", \"password\": \"$slskd_password\"}" \
   $slskd_addr/api/v0/session | jq -r '.token')
 
-auth_header="Authorization: Baerer $token"
+auth_header="Authorization: Bearer $token"
 
 config=$(curl -X GET --fail --silent --show-error \
   -H "$auth_header" \
