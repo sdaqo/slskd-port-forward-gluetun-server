@@ -31,9 +31,9 @@ token=$(curl -X POST --fail --silent --show-error \
 
 auth_header="Authorization: Bearer $token"
 
-config=$(curl -X GET --fail --silent --show-error \
+config="$(curl -X GET --fail --silent --show-error \
   -H "$auth_header" \
-  $slskd_addr/api/v0/options/yaml)
+  $slskd_addr/api/v0/options/yaml)"
 
 if [ ! "$config" ]; then
     echo "Could not get current slskd config, exiting..."
@@ -42,12 +42,12 @@ fi
 
 echo "Updating port to $port_number"
 
-config=$(echo $config | sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/p")
+config="$(echo "$config" | sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/p")"
 
 curl -X POST --fail --silent --show-error \
   -H "$auth_header" \
   -H "Content-Type: application/json" \
-  --data "$config" \
+  --data-raw "$config" \
   $slskd_addr/api/v0/options/yaml
 
 
