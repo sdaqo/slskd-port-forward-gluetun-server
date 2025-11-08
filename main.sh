@@ -25,7 +25,7 @@ else
 fi
 
 token=$(curl -X POST --fail --silent --show-error \
-  -H "Content-Type: application/json" --data \ 
+  -H "Content-Type: application/json" --data \
   "{\"username\": \"$slskd_username\", \"password\": \"$slskd_password\"}" \
   $slskd_addr/api/v0/session | jq '.token')
 
@@ -44,7 +44,7 @@ echo "Updating port to $port_number"
 
 config=$(sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/")
 
-curl -X POST --fail --silent --show-error \ 
+curl -X POST --fail --silent --show-error \
   -H "Content-Type: text/plain" \
   --data "$config" \
   $slskd_addr/api/v0/options/yaml
