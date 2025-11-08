@@ -42,7 +42,7 @@ fi
 
 echo "Updating port to $port_number"
 
-config=$(sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/")
+config=$(echo $config | sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/")
 
 curl -X POST --fail --silent --show-error \
   -H "$auth_header" \
