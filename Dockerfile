@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 VOLUME [ "/config" ]
 
-RUN apk --no-cache add jq curl
+RUN apk --no-cache add jq curl busybox
 
 RUN echo "*/10 * * * * /bin/sh /usr/src/app/main.sh" | crontab -
 

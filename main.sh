@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-qbt_username="${QBT_USERNAME:-admin}"
-qbt_password="${QBT_PASSWORD:-adminadmin}"
-qbt_addr="${QBT_ADDR:-http://localhost:8080}" # ex. http://10.0.1.48:8080
+slskd_username="${SLSKD_USERNAME:-admin}"
+slskd_password="${SLSKD_PASSWORD:-adminadmin}"
+slskd_addr="${SLSKD_ADDR:-http://localhost:5030}" # ex. http://10.0.1.48:8080
 gtn_addr="${GTN_ADDR:-http://localhost:8000}" # ex. http://10.0.1.48:8000
 
 if [[ -n "$GTN_USERNAME" && -n "$GTN_PASSWORD" ]]; then
@@ -24,22 +24,30 @@ else
     echo "Port number succesfully retrieved from Gluetun: $port_number"
 fi
 
-curl --fail --silent --show-error --cookie-jar /tmp/cookies.txt --cookie /tmp/cookies.txt --header "Referer: $qbt_addr" --data "username=$qbt_username" --data "password=$qbt_password" $qbt_addr/api/v2/auth/login 1> /dev/null
+token=$(curl -X POST --fail --silent --show-error \
+  -H "Content-Type: application/json" --data \ 
+  "{\"username\": \"$slskd_username\", \"password\": \"$slskd_password\"}" \
+  $slskd_addr/api/v0/session | jq '.token')
 
-listen_port=$(curl --fail --silent --show-error --cookie-jar /tmp/cookies.txt --cookie /tmp/cookies.txt $qbt_addr/api/v2/app/preferences | jq '.listen_port')
+auth_header="Authorization: Baerer $token"
 
-if [ ! "$listen_port" ]; then
-    echo "Could not get current listen port, exiting..."
+config=$(curl -X GET --fail --silent --show-error \
+  -H "$auth_header" \
+  $slskd_addr/api/v0/options/yaml)
+
+if [ ! "$config" ]; then
+    echo "Could not get current slskd config, exiting..."
     exit 1
-fi
-
-if [ "$port_number" = "$listen_port" ]; then
-    echo "Port already set, exiting..."
-    exit 0
 fi
 
 echo "Updating port to $port_number"
 
-curl --fail --silent --show-error --cookie-jar /tmp/cookies.txt --cookie /tmp/cookies.txt --data-urlencode "json={\"listen_port\": $port_number}"  $qbt_addr/api/v2/app/setPreferences
+config=$(sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/")
+
+curl -X POST --fail --silent --show-error \ 
+  -H "Content-Type: text/plain" \
+  --data "$config" \
+  $slskd_addr/api/v0/options/yaml
+
 
 echo "Successfully updated port"

@@ -1,6 +1,6 @@
-# qbittorrent-port-forward-gluetun-server
+# slskd-port-forward-gluetun-server
 
-A shell script and Docker container for automatically setting qBittorrent's listening port from Gluetun's control server.
+A shell script and Docker container for automatically setting slskd's listening port from Gluetun's control server.
 
 ## Config
 
@@ -8,9 +8,9 @@ A shell script and Docker container for automatically setting qBittorrent's list
 
 | Variable     | Example                     | Default                 | Description                                                                    |
 |--------------|-----------------------------|-------------------------|--------------------------------------------------------------------------------|
-| QBT_USERNAME | `username`                  | `admin`                 | qBittorrent username                                                           |
-| QBT_PASSWORD | `password`                  | `adminadmin`            | qBittorrent password                                                           |
-| QBT_ADDR     | `http://192.168.1.100:8080` | `http://localhost:8080` | HTTP URL for the qBittorrent web UI, with port                                 |
+| SLSKD_USERNAME | `username`                  | `admin`                 | slskd username                                                           |
+| SLSKD_PASSWORD | `password`                  | `adminadmin`            | slskd password                                                           |
+| SLSKD_ADDR     | `http://192.168.1.100:5030` | `http://localhost:5030` | HTTP URL for the slskd web UI, with port                                 |
 | GTN_ADDR     | `http://192.168.1.100:8000` | `http://localhost:8000` | HTTP URL for the gluetun control server, with port                             |
 | GTN_USERNAME | `username`                  | *None*                  | Username for authentication to gluetun control server (if basic auth enabled)  |
 | GTN_PASSWORD | `password`                  | *None*                  | Password for authentication to gluetun control server (if basic auth enabled)  |
@@ -34,13 +34,13 @@ Once configured in Gluetun, you can configure this container to use the appropri
 The following is an example docker-compose:
 
 ```yaml
-  qbittorrent-port-forward-gluetun-server:
-    image: mjmeli/qbittorrent-port-forward-gluetun-server
-    container_name: qbittorrent-port-forward-gluetun-server
+  slskd-port-forward-gluetun-server:
+    image: ghcr.io/sdaqo/slskd-port-forward-gluetun-server
+    container_name: slskd-port-forward-gluetun-server
     restart: unless-stopped
     environment:
-      - QBT_USERNAME=username
-      - QBT_PASSWORD=password
+      - SLSKD_USERNAME=username
+      - SLSKD_PASSWORD=password
       - QBT_ADDR=http://192.168.1.100:8080
       - GTN_ADDR=http://192.168.1.100:8000
       - GTN_APIKEY=CHANGEME
@@ -50,10 +50,10 @@ The following is an example docker-compose:
 
 ### Build Image
 ```bash
-docker build . -t qbittorrent-port-forward-gluetun-server
+docker build . -t slskd-port-forward-gluetun-server
 ```
 
 ### Run Container
 ```bash
-docker run --rm -it -e QBT_USERNAME=admin -e QBT_PASSWORD=adminadmin -e QBT_ADDR=http://192.168.1.100:8080 -e GTN_ADDR=http://192.168.1.100:8000 -e GTN_APIKEY=CHANGEME qbittorrent-port-forward-gluetun-server:latest
+docker run --rm -it -e SLSKD_USERNAME=admin -e SLSKD_PASSWORD=adminadmin -e SLSKD_ADDR=http://192.168.1.100:5030 -e GTN_ADDR=http://192.168.1.100:8000 -e GTN_APIKEY=CHANGEME slskd-port-forward-gluetun-server:latest
 ```
