@@ -45,7 +45,6 @@ echo "Updating port to $port_number"
 config=$(sed -n "s/listen_port:\s[0-9]*/listen_port: $port_number/")
 
 curl -X POST --fail --silent --show-error \
-  -H "Content-Type: text/plain" \
   --data "$config" \
   $slskd_addr/api/v0/options/yaml
 
