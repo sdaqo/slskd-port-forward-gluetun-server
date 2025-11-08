@@ -27,7 +27,7 @@ fi
 token=$(curl -X POST --fail --silent --show-error \
   -H "Content-Type: application/json" --data \
   "{\"username\": \"$slskd_username\", \"password\": \"$slskd_password\"}" \
-  $slskd_addr/api/v0/session | jq '.token')
+  $slskd_addr/api/v0/session | jq -r '.token')
 
 auth_header="Authorization: Baerer $token"
 
